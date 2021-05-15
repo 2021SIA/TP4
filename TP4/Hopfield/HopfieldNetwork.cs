@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TP4
+namespace TP4.Hopfield
 {
     public class HopfieldNetwork
     {

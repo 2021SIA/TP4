@@ -1,8 +1,7 @@
 ﻿using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using TP4.Hopfield;
 
 namespace TP4
 {

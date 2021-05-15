@@ -3,10 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace TP4
+namespace TP4.Hopfield
 {
     public class HopfieldUtils
     {
