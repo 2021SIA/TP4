@@ -8,22 +8,6 @@ namespace TP4
 {
     class Program
     {
-        static List<Vector<double>> ParsePatterns(string path, int rows, int columns)
-        {
-            List<Vector<double>> trainingInput = new List<Vector<double>>();
-            using (var reader = new StreamReader(path))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = "";
-                    for (var i = 0; i < rows && !reader.EndOfStream; i++)
-                        line += reader.ReadLine().PadRight(columns,' ').Substring(0, columns);
-                    var values = line.ToCharArray().Select(val => val == '*' ? 1.0 : -1.0); ;
-                    trainingInput.Add(Vector<double>.Build.Dense(values.ToArray()));
-                }
-            }
-            return trainingInput;
-        }
         static void PrintPatterns(List<Vector<double>> patterns, int columns)
         {
             for (int i = 0; i < patterns.Count; i++)
@@ -44,17 +28,41 @@ namespace TP4
         /// Unsupervised Learning Engine
         /// </summary>
         /// <param name="config">Path to the configuration file</param>
-        static void Main(string config)
+        static async void Main(string config)
         {
             Configuration configuration = Configuration.FromYamlFile(config);
-            if(configuration.Network == "hopfield")
+            switch (configuration.Network)
             {
-                var patterns = ParsePatterns(configuration.Patterns, configuration.PatternRows, configuration.PatternColumns);
-                var network = new HopfieldNetwork(patterns);
-                Random rand = new Random();
-                var input = patterns[configuration.TestPattern].Map((v) => rand.NextDouble() < configuration.Noise ? v * -1.0 : v);
-                var result = network.GetPattern(input);
-                PrintPatterns(result, configuration.PatternColumns);
+                case "hopfield":
+                    //Parse network patterns
+                    var patterns = HopfieldUtils.ParsePatterns(configuration.Patterns, configuration.PatternRows, configuration.PatternColumns);
+                    //Initialize Hopfield network
+                    var network = new HopfieldNetwork(patterns);
+                    //Test network and get closest pattern
+                    Console.WriteLine($"Testing Pattern: {configuration.TestPattern}; Noise: {configuration.Noise}\n");
+                    var result = HopfieldUtils.Test(network, patterns, configuration.TestPattern, configuration.Noise);
+                    //Print network intermediate states
+                    PrintPatterns(result, configuration.PatternColumns);
+                    //Check if network got to test pattern successfully
+                    if (patterns.IndexOf(result[result.Count - 1]) == configuration.TestPattern)
+                        Console.WriteLine("Found pattern!\n");
+                    else
+                        Console.WriteLine("Could not find pattern.\n");
+
+                    if (configuration.Metrics == "all" || configuration.Metrics == "noise")
+                    {
+                        //Get network noise accuracy metrics
+                        await HopfieldUtils.SaveNoiseAccuracyMetrics(network, patterns, configuration.Repetitions, configuration.TestPattern);
+                        Console.WriteLine($"Noise metrics stored in accuracy.csv [Repetitions: {configuration.Repetitions}]");
+                    }
+                    if (configuration.Metrics == "all" || configuration.Metrics == "energy")
+                    {
+                        //Get network energy metrics
+                        await HopfieldUtils.SaveEnergyMetrics(network, patterns, configuration.Repetitions, configuration.TestPattern, configuration.Noise);
+                        Console.WriteLine("Energy metrics stored in energy_{i}.csv" + $" [Repetitions: {configuration.Repetitions}]");
+                    }
+                    break;
+
             }
         }
     }
