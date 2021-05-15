@@ -1,0 +1,6 @@
+﻿network: hopfield
+patterns: letters.txt
+pattern_rows: 5
+pattern_columns: 5
+test_pattern: 0
+noise: 0.3
