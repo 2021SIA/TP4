@@ -4,3 +4,5 @@ pattern_rows: 5
 pattern_columns: 5
 test_pattern: 0
 noise: 0.2
+learning_rate: 0.01
+csv: europe.csv

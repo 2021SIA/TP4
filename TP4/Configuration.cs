@@ -17,6 +17,8 @@ namespace TP4
         public double Noise { get; set; } = 0.2;
         public string Metrics { get; set; }
         public int Repetitions { get; set; } = 1;
+        public double LearningRate { get; set; } = 0.01;
+        public string Csv { get; set; }
 
         public static Configuration FromYamlFile(string path)
         {

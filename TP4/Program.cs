@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using TP4.Hopfield;
+using TP4.Oja;
+using System.IO;
 
 namespace TP4
 {
@@ -22,6 +24,30 @@ namespace TP4
                 Console.WriteLine();
                 Console.WriteLine();
             }
+        }
+
+        static List<Vector<double>> ParseCsv(string path)
+        {
+            List<Vector<double>> trainingInput = new List<Vector<double>>();
+            bool first = true;
+            using (var reader = new StreamReader(path))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    string[] values2 = new string[7];
+                    if (!first)
+                    {
+                        string[] values = line.Split(';');
+                        Array.Copy(values, 1, values2, 0, values.Length - 1);
+                        Console.WriteLine(String.Join(";", values2));
+                        trainingInput.Add(Vector<double>.Build.Dense(Array.ConvertAll(values2, s => double.Parse(s))));
+                    }
+                    else
+                        first = false;
+                }
+            }
+            return trainingInput;
         }
         /// <summary>
         /// Unsupervised Learning Engine
@@ -60,6 +86,14 @@ namespace TP4
                         await HopfieldUtils.SaveEnergyMetrics(network, patterns, configuration.Repetitions, configuration.TestPattern, configuration.Noise);
                         Console.WriteLine("Energy metrics stored in energy_{i}.csv" + $" [Repetitions: {configuration.Repetitions}]");
                     }
+                    break;
+                case "oja":
+                    var epochs = 1000;
+                    Console.WriteLine(configuration.LearningRate);
+
+                    var networkOja = new OjaNetwork(configuration.LearningRate, epochs, ParseCsv(configuration.Csv));
+                    var W = networkOja.TrainOja();
+                    Console.WriteLine(W);
                     break;
 
             }
