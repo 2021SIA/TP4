@@ -45,7 +45,7 @@ namespace TP4.Kohonen
             return Math.Sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
         }
 
-        private (int,int) FindMin(Vector<double> input)
+        public (int,int) Classify(Vector<double> input)
         {
             int im = 0, jm = 0;
             double min = Distance(W[im, jm], input);
@@ -86,7 +86,7 @@ namespace TP4.Kohonen
 
                 var input = values[SystemRandomSource.Default.Next(values.Count)];
                 int i, j;
-                (i, j) = FindMin(input);
+                (i, j) = Classify(input);
 
                 Update(input, i, j, radius, rate);
             }
