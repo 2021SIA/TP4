@@ -15,16 +15,18 @@ namespace TP4.Kohonen
         public List<Vector<double>> values;
         private int inputLength;
 
-        public KohonenNetwork(List<Vector<double>> values, int n)
+        public KohonenNetwork(List<Vector<double>> values, int n, bool weightEntries)
         {
             this.values = Normalize(values);
             W = new Vector<double>[n, n];
             N = n;
 
             inputLength = values[0].Count;
+            var indexes = MathNet.Numerics.Combinatorics.GeneratePermutation(n * n);
+            var current = 0;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
-                    W[i, j] = CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1));
+                    W[i, j] = weightEntries ? CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1)) : values[indexes[current++]];
         }
 
         private List<Vector<double>> Normalize(List<Vector<double>> values)
