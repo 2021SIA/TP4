@@ -109,6 +109,28 @@ namespace TP4
                     await File.WriteAllLinesAsync("classification.csv", groups.Select((v, index) => $"{v.x},{v.y}"));
                     var weights = from Vector<double> weight in kohonen.W select weight;
                     await File.WriteAllLinesAsync("weights.csv", weights.Select((v, index) => v.Aggregate("",(str,n) => str + n + ",")));
+                    var distances = new List<double>();
+                    for(i = 0; i < kohonen.N; i++)
+                    {
+                        for(var j = 0; j < kohonen.N; j++)
+                        {
+                            int imin = Math.Max(0, i - 1);
+                            int imax = Math.Min(kohonen.N - 1, i + 1);
+                            int jmin = Math.Max(0, j - 1);
+                            int jmax = Math.Min(kohonen.N - 1, j + 1);
+
+                            var neuronDist = new List<double>();
+                            for (int x = imin; x <= imax; x++)
+                                for (int y = jmin; y <= jmax; y++)
+                                {
+                                    if ((i != x || j != y) && kohonen.Distance((i, j), (x, y)) <= 1)
+                                        neuronDist.Add(kohonen.Distance(kohonen.W[i, j], kohonen.W[x, y]));
+                                }
+                            distances.Add(neuronDist.Average());
+                        }
+                    }
+                    await File.WriteAllLinesAsync("distances.csv", distances.Select(v => v.ToString()));
+
                     break;
 
             }

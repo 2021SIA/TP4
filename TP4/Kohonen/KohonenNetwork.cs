@@ -37,12 +37,12 @@ namespace TP4.Kohonen
             return values.Select(v => (v - mean) / std).ToList();
         }
 
-        private double Distance(Vector<double> weight, Vector<double> input)
+        public double Distance(Vector<double> weight, Vector<double> input)
         {
             return (weight - input).L2Norm();
         }
 
-        private double Distance((int x, int y) pointA, (int x, int y) pointB)
+        public double Distance((int x, int y) pointA, (int x, int y) pointB)
         {
             return Math.Sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
         }
