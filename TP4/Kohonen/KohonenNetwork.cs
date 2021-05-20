@@ -21,12 +21,12 @@ namespace TP4.Kohonen
             W = new Vector<double>[n, n];
             N = n;
 
-            inputLength = values[0].Count;
-            var indexes = MathNet.Numerics.Combinatorics.GeneratePermutation(values.Count);
+            inputLength = this.values[0].Count;
+            var indexes = MathNet.Numerics.Combinatorics.GenerateVariationWithRepetition(this.values.Count, n * n);
             var current = 0;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
-                    W[i, j] = weightEntries ? CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1)) : values[indexes[current++]];
+                    W[i, j] = weightEntries ? CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1)) : this.values[indexes[current++]];
         }
 
         private List<Vector<double>> Normalize(List<Vector<double>> values)

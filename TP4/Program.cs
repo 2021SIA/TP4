@@ -40,7 +40,7 @@ namespace TP4
                     string[] values2 = new string[7];
                     if (!first)
                     {
-                        string[] values = line.Split(",");
+                        string[] values = line.Split(',');
                         Array.Copy(values, 1, values2, 0, values.Length - 1);
                         trainingInput.Add(Vector<double>.Build.Dense(Array.ConvertAll(values2, s => double.Parse(s))));
                     }
