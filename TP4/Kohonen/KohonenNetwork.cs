@@ -26,7 +26,7 @@ namespace TP4.Kohonen
             var current = 0;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
-                    W[i, j] = weightEntries ? CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1)) : this.values[indexes[current++]];
+                    W[i, j] = !weightEntries ? CreateVector.Random<double>(inputLength, new ContinuousUniform(0, 1)) : this.values[indexes[current++]];
         }
 
         private List<Vector<double>> Normalize(List<Vector<double>> values)
@@ -51,8 +51,8 @@ namespace TP4.Kohonen
         {
             int im = 0, jm = 0;
             double min = Distance(W[im, jm], input);
-            for(int i = 1; i < N; i++)
-                for(int j = 1; j < N; j++)
+            for(int i = 0; i < N; i++)
+                for(int j = 0; j < N; j++)
                 {
                     double dist = Distance(W[i, j], input);
                     if(dist < min)
