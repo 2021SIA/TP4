@@ -22,7 +22,7 @@ namespace TP4.Kohonen
             N = n;
 
             inputLength = values[0].Count;
-            var indexes = MathNet.Numerics.Combinatorics.GeneratePermutation(n * n);
+            var indexes = MathNet.Numerics.Combinatorics.GeneratePermutation(values.Count);
             var current = 0;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
@@ -79,18 +79,19 @@ namespace TP4.Kohonen
                 }
         }
 
-        public void Train(int iterations)
+        public void Train(int epochs)
         {
-            for(int t = 1; t <= iterations; t++)
+            for(int t = 1; t <= epochs; t++)
             {
-                double rate = 1 / t;
-                double radius = Math.Max(1, N - (2d / iterations) * t * N);
+                double rate = 1d / t;
+                double radius = Math.Max(1, N - (2d / epochs) * t * N);
+                foreach (var input in values)
+                {
+                    int i, j;
+                    (i, j) = Classify(input);
 
-                var input = values[SystemRandomSource.Default.Next(values.Count)];
-                int i, j;
-                (i, j) = Classify(input);
-
-                Update(input, i, j, radius, rate);
+                    Update(input, i, j, radius, rate);
+                }
             }
         }
     }

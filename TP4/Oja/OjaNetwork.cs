@@ -33,17 +33,9 @@ namespace TP4.Oja
 
             this.values = values.Select(v => (v - mean)/std).ToList();
             this.variables = values[1].Count;
-            Vector<double> auxW = CreateVector.Random<double>(variables, new ContinuousUniform(0, 1));
-            //Vector<double> f = CreateVector.Dense<double>(new[] { 4.0, 31, 29,33,4,10,3});
+            this.W = CreateVector.Random<double>(variables, new ContinuousUniform(-1, 1));
 
             this.LearningRate = learningRate;
-            double aux = 0;
-            foreach( double w in auxW)
-            {
-                aux += Math.Pow(w, 2);
-            }
-            this.W = auxW/ (double)Math.Sqrt(aux);
-            //this.W = f / Math.Sqrt(aux);
 
         }
         public Vector<double> TrainOja()
@@ -52,20 +44,12 @@ namespace TP4.Oja
             {
                foreach (var sample in this.values)
                {
-                   var activ = predict(sample);
+                   var activ = W * sample;
                    this.W += this.LearningRate * activ * (sample - (activ * this.W));
                }
             }
-            return W;
+            var norm = Math.Sqrt((W * W.ToColumnMatrix()).Aggregate(0.0,(sum, val) => sum + val));
+            return W / norm;
         }
-
-        private double predict(Vector<double> sample){
-            double activ = 0;
-            for (int i = 0; i < this.variables; i++)
-            {
-                activ += this.W[i] * sample[i];
-            }
-            return activ;
-        } 
     }
 }

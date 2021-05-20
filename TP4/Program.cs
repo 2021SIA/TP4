@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using TP4.Hopfield;
 using TP4.Oja;
 using System.IO;
+using TP4.Kohonen;
+using System.Linq;
 
 namespace TP4
 {
@@ -38,7 +40,7 @@ namespace TP4
                     string[] values2 = new string[7];
                     if (!first)
                     {
-                        string[] values = line.Split(',');
+                        string[] values = line.Split(",");
                         Array.Copy(values, 1, values2, 0, values.Length - 1);
                         trainingInput.Add(Vector<double>.Build.Dense(Array.ConvertAll(values2, s => double.Parse(s))));
                     }
@@ -87,10 +89,26 @@ namespace TP4
                     }
                     break;
                 case "oja":
-                    var epochs = 1000;
-                    var networkOja = new OjaNetwork(configuration.LearningRate, epochs, ParseCsv(configuration.Csv));
+                    var networkOja = new OjaNetwork(configuration.LearningRate, configuration.Epochs, ParseCsv(configuration.Csv));
                     var W = networkOja.TrainOja();
                     Console.WriteLine(W);
+                    break;
+                case "kohonen":
+                    var values = ParseCsv(configuration.Csv);
+                    var kohonen = new KohonenNetwork(values, configuration.KohonenK, configuration.WeightEntries);
+                    kohonen.Train(configuration.Epochs);
+                    var i = 0;
+                    var countries = new string[] {"Austria", "Belgium", "Bulgaria", "Croatia", "Czech", "Denmark", "Estonia", "Finland", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Netherlands", "Norway", "Poland", "Portugal", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine", "United Kingdom" };
+                    var groups = new List<(int x, int y)>();
+                    foreach (var city in kohonen.values)
+                    {
+                        (int x, int y) group = kohonen.Classify(city);
+                        Console.WriteLine($"{countries[i++]}: {group.x},{group.y}");
+                        groups.Add(group);
+                    }
+                    await File.WriteAllLinesAsync("classification.csv", groups.Select((v, index) => $"{v.x},{v.y}"));
+                    var weights = from Vector<double> weight in kohonen.W select weight;
+                    await File.WriteAllLinesAsync("weights.csv", weights.Select((v, index) => v.Aggregate("",(str,n) => str + n + ",")));
                     break;
 
             }

@@ -9,6 +9,7 @@ namespace TP4
 {
     public class Configuration
     {
+        public int Epochs { get; set; } = 1000;
         public string Network { get; set; }
         public string Patterns { get; set; }
         public int PatternRows { get; set; } = 5;
@@ -19,6 +20,9 @@ namespace TP4
         public int Repetitions { get; set; } = 1;
         public double LearningRate { get; set; } = 0.01;
         public string Csv { get; set; }
+        public int KohonenK { get; set; } = 4;
+
+        public bool WeightEntries { get; set; } = true;
 
         public static Configuration FromYamlFile(string path)
         {
